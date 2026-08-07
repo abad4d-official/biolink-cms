@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Biolink</title>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#0F2A2E; --bg-panel:#153A3F; --cream:#F5F1E8;
+    --amber:#E8A33D; --sage:#7FA69B; --line:rgba(245,241,232,0.14);
+    --danger:#D9614F;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg-deep); color:var(--cream);
+    font-family:'Work Sans', sans-serif; padding:24px 16px 80px;
+  }
+  .wrap{ max-width:640px; margin:0 auto; }
+  h1{ font-size:20px; margin-bottom:4px; }
+  .sub{ color:var(--sage); font-size:13px; margin-bottom:24px; }
+
+  /* --- Login gate --- */
+  #login{ max-width:320px; margin:80px auto; text-align:center; }
+  #login input{
+    width:100%; padding:12px; border-radius:10px; border:1px solid var(--line);
+    background:var(--bg-panel); color:var(--cream); font-size:14px; margin-bottom:10px;
+  }
+  #login button{
+    width:100%; padding:12px; border-radius:10px; border:none;
+    background:var(--amber); color:var(--bg-deep); font-weight:600; cursor:pointer;
+  }
+  #loginError{ color:var(--danger); font-size:13px; margin-top:8px; min-height:18px; }
+
+  /* --- Admin panel --- */
+  #panel{ display:none; }
+  .toolbar{ display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+  .toolbar select, .toolbar button{
+    padding:10px 14px; border-radius:10px; border:1px solid var(--line);
+    background:var(--bg-panel); color:var(--cream); font-size:13px; cursor:pointer;
+  }
+  .btn-save{ background:var(--amber); color:var(--bg-deep); border:none; font-weight:600; margin-left:auto; }
+  .status{ font-size:12px; color:var(--sage); margin-left:8px; align-self:center; }
+
+  .block{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:12px;
+    padding:14px; margin-bottom:10px;
+  }
+  .block-head{ display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+  .block-type{ font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--sage); font-weight:600; }
+  .block-head .spacer{ flex:1; }
+  .icon-btn{
+    background:none; border:none; color:var(--cream); opacity:0.7; cursor:pointer;
+    font-size:14px; padding:4px 6px;
+  }
+  .icon-btn:hover{ opacity:1; }
+  .icon-btn.danger{ color:var(--danger); }
+
+  .field{ margin-bottom:8px; }
+  .field label{ display:block; font-size:11.5px; color:var(--sage); margin-bottom:3px; }
+  .field input, .field select{
+    width:100%; padding:9px 10px; border-radius:8px; border:1px solid var(--line);
+    background:var(--bg-deep); color:var(--cream); font-size:13.5px;
+  }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+
+  .empty-msg{ text-align:center; color:var(--sage); font-size:13px; padding:30px 0; }
+</style>
+</head>
+<body>
+
+<div id="login">
+  <h1>Masuk Admin</h1>
+  <p class="sub">Masukkan password untuk mengelola halaman</p>
+  <input type="password" id="pwInput" placeholder="Password admin">
+  <button onclick="tryLogin()">Masuk</button>
+  <div id="loginError"></div>
+</div>
+
+<div class="wrap" id="panel">
+  <h1>Kelola Halaman</h1>
+  <p class="sub">Tambah, edit, urutkan, atau hapus block. Jangan lupa klik Simpan.</p>
+
+  <div class="toolbar">
+    <select id="typeSelect">
+      <option value="avatar">Avatar</option>
+      <option value="heading">Judul</option>
+      <option value="paragraph">Paragraf</option>
+      <option value="divider">Pemisah</option>
+      <option value="link">Link (tombol utama)</option>
+      <option value="link-card">Link (kartu)</option>
+      <option value="image">Gambar</option>
+    </select>
+    <button onclick="addBlock()">+ Tambah block</button>
+    <button class="btn-save" onclick="saveBlocks()">Simpan perubahan</button>
+    <span class="status" id="statusMsg"></span>
+  </div>
+
+  <div id="blockList"></div>
+</div>
+
+<script>
+const ADMIN_TOKEN_KEY = 'biolink_admin_token';
+let blocks = [];
+
+function tryLogin() {
+  const pw = document.getElementById('pwInput').value;
+  if (!pw) return;
+  sessionStorage.setItem(ADMIN_TOKEN_KEY, pw);
+  verifyAndLoad();
+}
+
+async function verifyAndLoad() {
+  const token = sessionStorage.getItem(ADMIN_TOKEN_KEY);
+  if (!token) return;
+
+  // Coba load data. Kalau token salah, POST test-nya baru ketahuan saat save.
+  const res = await fetch('/api/blocks');
+  blocks = await res.json();
+
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('panel').style.display = 'block';
+  renderList();
+}
+
+function blankBlock(type) {
+  const id = 'b' + Date.now() + Math.floor(Math.random() * 1000);
+  switch (type) {
+    case 'avatar': return { id, type: 'avatar', text: 'NB' };
+    case 'heading': return { id, type: 'heading', text: 'Judul Baru' };
+    case 'paragraph': return { id, type: 'paragraph', text: 'Teks paragraf...' };
+    case 'divider': return { id, type: 'divider' };
+    case 'link': return { id, type: 'link', style: 'main', title: 'Chat via WhatsApp', url: 'https://wa.me/62' };
+    case 'link-card': return { id, type: 'link', style: 'card', title: 'Judul link', subtitle: 'Keterangan singkat', url: 'https://' };
+    case 'image': return { id, type: 'image', src: 'https://via.placeholder.com/300x300', href: '' };
+  }
+}
+
+function addBlock() {
+  const type = document.getElementById('typeSelect').value;
+  blocks.push(blankBlock(type));
+  renderList();
+}
+
+function removeBlock(id) {
+  blocks = blocks.filter(b => b.id !== id);
+  renderList();
+}
+
+function moveBlock(id, dir) {
+  const i = blocks.findIndex(b => b.id === id);
+  const j = i + dir;
+  if (j < 0 || j >= blocks.length) return;
+  [blocks[i], blocks[j]] = [blocks[j], blocks[i]];
+  renderList();
+}
+
+function updateField(id, key, value) {
+  const b = blocks.find(x => x.id === id);
+  if (b) b[key] = value;
+}
+
+function renderList() {
+  const list = document.getElementById('blockList');
+  if (!blocks.length) {
+    list.innerHTML = '<p class="empty-msg">Belum ada block. Tambahkan dari toolbar di atas.</p>';
+    return;
+  }
+  list.innerHTML = blocks.map((b, i) => blockCard(b, i)).join('');
+}
+
+function blockCard(b, i) {
+  let fields = '';
+  if (b.type === 'avatar' || b.type === 'heading' || b.type === 'paragraph') {
+    fields = `<div class="field"><label>Teks</label>
+      <input value="${esc(b.text)}" oninput="updateField('${b.id}','text',this.value)"></div>`;
+  } else if (b.type === 'link' && b.style === 'main') {
+    fields = `
+      <div class="field"><label>Judul tombol</label>
+        <input value="${esc(b.title)}" oninput="updateField('${b.id}','title',this.value)"></div>
+      <div class="field"><label>URL tujuan</label>
+        <input value="${esc(b.url)}" oninput="updateField('${b.id}','url',this.value)"></div>`;
+  } else if (b.type === 'link' && b.style === 'card') {
+    fields = `
+      <div class="field"><label>Judul</label>
+        <input value="${esc(b.title)}" oninput="updateField('${b.id}','title',this.value)"></div>
+      <div class="field"><label>Keterangan</label>
+        <input value="${esc(b.subtitle)}" oninput="updateField('${b.id}','subtitle',this.value)"></div>
+      <div class="field"><label>URL tujuan</label>
+        <input value="${esc(b.url)}" oninput="updateField('${b.id}','url',this.value)"></div>`;
+  } else if (b.type === 'image') {
+    fields = `
+      <div class="row2">
+        <div class="field"><label>URL gambar</label>
+          <input value="${esc(b.src)}" oninput="updateField('${b.id}','src',this.value)"></div>
+        <div class="field"><label>URL saat diklik (opsional)</label>
+          <input value="${esc(b.href)}" oninput="updateField('${b.id}','href',this.value)"></div>
+      </div>`;
+  }
+
+  const typeLabel = b.type === 'link'
+    ? (b.style === 'main' ? 'Link (tombol utama)' : 'Link (kartu)')
+    : b.type;
+
+  return `
+    <div class="block">
+      <div class="block-head">
+        <span class="block-type">${typeLabel}</span>
+        <div class="spacer"></div>
+        <button class="icon-btn" onclick="moveBlock('${b.id}',-1)" title="Naik">↑</button>
+        <button class="icon-btn" onclick="moveBlock('${b.id}',1)" title="Turun">↓</button>
+        <button class="icon-btn danger" onclick="removeBlock('${b.id}')" title="Hapus">✕</button>
+      </div>
+      ${fields}
+    </div>`;
+}
+
+async function saveBlocks() {
+  const token = sessionStorage.getItem(ADMIN_TOKEN_KEY);
+  const statusEl = document.getElementById('statusMsg');
+  statusEl.textContent = 'Menyimpan...';
+
+  const res = await fetch('/api/blocks', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-admin-token': token },
+    body: JSON.stringify(blocks)
+  });
+
+  if (res.status === 401) {
+    statusEl.textContent = '';
+    sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+    document.getElementById('panel').style.display = 'none';
+    document.getElementById('login').style.display = 'block';
+    document.getElementById('loginError').textContent = 'Password salah, coba lagi.';
+    return;
+  }
+
+  statusEl.textContent = 'Tersimpan ✓';
+  setTimeout(() => statusEl.textContent = '', 2000);
+}
+
+function esc(str) {
+  return String(str || '').replace(/"/g, '&quot;');
+}
+
+// Auto-login kalau token masih ada di session
+if (sessionStorage.getItem(ADMIN_TOKEN_KEY)) verifyAndLoad();
+</script>
+</body>
+</html>

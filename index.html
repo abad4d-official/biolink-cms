@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nama Bisnis Kamu — Link Resmi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#0F2A2E;
+    --bg-panel:#153A3F;
+    --cream:#F5F1E8;
+    --amber:#E8A33D;
+    --sage:#7FA69B;
+    --line:rgba(245,241,232,0.12);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 15% 0%, rgba(232,163,61,0.10), transparent 45%),
+      radial-gradient(circle at 90% 20%, rgba(127,166,155,0.10), transparent 40%),
+      var(--bg-deep);
+    color:var(--cream);
+    font-family:'Work Sans', sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:56px 20px 80px;
+  }
+  .page{ width:100%; max-width:440px; }
+  .avatar{
+    width:84px; height:84px; border-radius:50%;
+    background:linear-gradient(135deg, var(--amber), #c97f1f);
+    display:flex; align-items:center; justify-content:center;
+    margin:0 auto 20px;
+    font-family:'Fraunces', serif; font-size:34px; font-weight:700;
+    color:var(--bg-deep);
+    box-shadow:0 8px 24px rgba(232,163,61,0.25);
+  }
+  h1{
+    font-family:'Fraunces', serif; font-weight:600; font-size:26px;
+    text-align:center; letter-spacing:-0.01em;
+  }
+  .paragraph{ text-align:center; color:var(--sage); font-size:14px; margin-top:6px; line-height:1.5; }
+  .divider{ display:flex; justify-content:center; gap:6px; margin:24px 0; }
+  .divider span{ width:4px; height:4px; border-radius:50%; background:var(--sage); opacity:0.5; }
+  .cta-main{
+    display:block; background:var(--amber); color:var(--bg-deep);
+    text-decoration:none; text-align:center; font-weight:600; font-size:15px;
+    padding:16px; border-radius:14px; margin-bottom:12px;
+    transition:transform .15s ease, box-shadow .15s ease;
+    box-shadow:0 6px 18px rgba(232,163,61,0.18);
+  }
+  .cta-main:hover{ transform:translateY(-2px); }
+  .link-card{
+    display:flex; align-items:center; gap:14px;
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:14px;
+    padding:14px 16px; margin-bottom:12px; text-decoration:none; color:var(--cream);
+    transition:border-color .15s ease, transform .15s ease;
+  }
+  .link-card:hover{ border-color:var(--amber); transform:translateY(-2px); }
+  .link-card .dot{ width:10px; height:10px; border-radius:50%; background:var(--sage); flex-shrink:0; }
+  .link-card .text strong{ display:block; font-size:14.5px; font-weight:500; }
+  .link-card .text span{ display:block; font-size:12.5px; color:var(--sage); margin-top:2px; }
+  .image-block{ margin-bottom:12px; border-radius:14px; overflow:hidden; border:1px solid var(--line); display:block; }
+  .image-block img{ width:100%; display:block; }
+  .loading, .empty{ text-align:center; color:var(--sage); font-size:14px; margin-top:40px; }
+  footer{ text-align:center; margin-top:40px; font-size:12px; color:rgba(245,241,232,0.35); }
+</style>
+</head>
+<body>
+<div class="page" id="page">
+  <p class="loading">Memuat...</p>
+</div>
+
+<script>
+async function render() {
+  const container = document.getElementById('page');
+  let blocks = [];
+
+  try {
+    const res = await fetch('/api/blocks');
+    blocks = await res.json();
+  } catch (e) {
+    container.innerHTML = '<p class="empty">Gagal memuat data.</p>';
+    return;
+  }
+
+  if (!blocks.length) {
+    container.innerHTML = '<p class="empty">Belum ada konten. Buka /admin.html untuk mulai menambahkan.</p>';
+    return;
+  }
+
+  container.innerHTML = blocks.map(renderBlock).join('') +
+    '<footer>© 2026 Nama Bisnis Kamu</footer>';
+}
+
+function renderBlock(b) {
+  switch (b.type) {
+    case 'avatar':
+      return `<div class="avatar">${escapeHtml(b.text || '')}</div>`;
+    case 'heading':
+      return `<h1>${escapeHtml(b.text || '')}</h1>`;
+    case 'paragraph':
+      return `<p class="paragraph">${escapeHtml(b.text || '')}</p>`;
+    case 'divider':
+      return `<div class="divider"><span></span><span></span><span></span></div>`;
+    case 'link':
+      if (b.style === 'main') {
+        return `<a class="cta-main" href="${escapeAttr(b.url)}" target="_blank">${escapeHtml(b.title || '')}</a>`;
+      }
+      return `<a class="link-card" href="${escapeAttr(b.url)}" target="_blank">
+                <div class="dot"></div>
+                <div class="text">
+                  <strong>${escapeHtml(b.title || '')}</strong>
+                  <span>${escapeHtml(b.subtitle || '')}</span>
+                </div>
+              </a>`;
+    case 'image':
+      return `<a class="image-block" href="${escapeAttr(b.href || b.src)}" target="_blank">
+                <img src="${escapeAttr(b.src)}" alt="">
+              </a>`;
+    default:
+      return '';
+  }
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  }[c]));
+}
+function escapeAttr(str) {
+  return String(str || '#').replace(/"/g, '&quot;');
+}
+
+render();
+</script>
+</body>
+</html>
