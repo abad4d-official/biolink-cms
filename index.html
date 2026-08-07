@@ -164,6 +164,14 @@ function renderBlock(b) {
                 </div>
               </div>`;
     }
+    case 'gallery-link':
+      return `<a class="link-card" href="gallery.html?id=${encodeURIComponent(b.id)}">
+                <div class="dot"></div>
+                <div class="text">
+                  <strong>${escapeHtml(b.title || '')}</strong>
+                  <span>${escapeHtml(b.subtitle || '')}</span>
+                </div>
+              </a>`;
     default:
       return '';
   }
