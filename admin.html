@@ -90,6 +90,7 @@
       <option value="link">Link (tombol utama)</option>
       <option value="link-card">Link (kartu)</option>
       <option value="image">Gambar</option>
+      <option value="gallery-expand">Kartu expand (galeri foto)</option>
     </select>
     <button onclick="addBlock()">+ Tambah block</button>
     <button class="btn-save" onclick="saveBlocks()">Simpan perubahan</button>
@@ -133,6 +134,7 @@ function blankBlock(type) {
     case 'link': return { id, type: 'link', style: 'main', title: 'Chat via WhatsApp', url: 'https://wa.me/62' };
     case 'link-card': return { id, type: 'link', style: 'card', title: 'Judul link', subtitle: 'Keterangan singkat', url: 'https://' };
     case 'image': return { id, type: 'image', src: 'https://via.placeholder.com/300x300', href: '' };
+    case 'gallery-expand': return { id, type: 'gallery-expand', title: 'Judul Kartu', images: [] };
   }
 }
 
@@ -158,6 +160,22 @@ function moveBlock(id, dir) {
 function updateField(id, key, value) {
   const b = blocks.find(x => x.id === id);
   if (b) b[key] = value;
+}
+
+function addGalleryImage(id) {
+  const b = blocks.find(x => x.id === id);
+  if (!b) return;
+  if (!b.images) b.images = [];
+  b.images.push('https://via.placeholder.com/300x300');
+  renderList();
+}
+function updateGalleryImage(id, idx, value) {
+  const b = blocks.find(x => x.id === id);
+  if (b && b.images) b.images[idx] = value;
+}
+function removeGalleryImage(id, idx) {
+  const b = blocks.find(x => x.id === id);
+  if (b && b.images) { b.images.splice(idx, 1); renderList(); }
 }
 
 function renderList() {
@@ -196,11 +214,25 @@ function blockCard(b, i) {
         <div class="field"><label>URL saat diklik (opsional)</label>
           <input value="${esc(b.href)}" oninput="updateField('${b.id}','href',this.value)"></div>
       </div>`;
+  } else if (b.type === 'gallery-expand') {
+    const imgs = (b.images || []).map((url, idx) => `
+      <div class="field" style="display:flex; gap:6px; align-items:center;">
+        <input style="flex:1" value="${esc(url)}" oninput="updateGalleryImage('${b.id}',${idx},this.value)">
+        <button class="icon-btn danger" onclick="removeGalleryImage('${b.id}',${idx})" title="Hapus gambar">✕</button>
+      </div>`).join('');
+    fields = `
+      <div class="field"><label>Judul kartu (yang tampil sebelum diklik)</label>
+        <input value="${esc(b.title)}" oninput="updateField('${b.id}','title',this.value)"></div>
+      <label style="display:block; font-size:11.5px; color:var(--sage); margin-bottom:6px;">Foto di dalam kartu</label>
+      ${imgs}
+      <button class="icon-btn" style="border:1px dashed var(--line); border-radius:8px; padding:8px; width:100%; margin-top:4px;"
+        onclick="addGalleryImage('${b.id}')">+ Tambah URL gambar</button>`;
   }
 
+  const typeLabels = { 'gallery-expand': 'Kartu expand (galeri foto)' };
   const typeLabel = b.type === 'link'
     ? (b.style === 'main' ? 'Link (tombol utama)' : 'Link (kartu)')
-    : b.type;
+    : (typeLabels[b.type] || b.type);
 
   return `
     <div class="block">
