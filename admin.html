@@ -189,7 +189,13 @@ function renderList() {
 
 function blockCard(b, i) {
   let fields = '';
-  if (b.type === 'avatar' || b.type === 'heading' || b.type === 'paragraph') {
+  if (b.type === 'avatar') {
+    fields = `
+      <div class="field"><label>URL gambar (kosongkan kalau mau pakai inisial teks)</label>
+        <input value="${esc(b.imgSrc)}" oninput="updateField('${b.id}','imgSrc',this.value)"></div>
+      <div class="field"><label>Inisial teks (fallback kalau gambar kosong)</label>
+        <input value="${esc(b.text)}" oninput="updateField('${b.id}','text',this.value)"></div>`;
+  } else if (b.type === 'heading' || b.type === 'paragraph') {
     fields = `<div class="field"><label>Teks</label>
       <input value="${esc(b.text)}" oninput="updateField('${b.id}','text',this.value)"></div>`;
   } else if (b.type === 'link' && b.style === 'main') {
