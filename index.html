@@ -55,6 +55,25 @@
     box-shadow:0 6px 18px rgba(232,163,61,0.18);
   }
   .cta-main:hover{ transform:translateY(-2px); }
+
+  .badge-title{
+    display:inline-block; background:var(--amber); color:var(--bg-deep);
+    font-family:'Fraunces', serif; font-weight:700; font-size:18px;
+    padding:6px 18px; border-radius:999px; margin:0 auto 20px; text-align:center;
+  }
+  .badge-wrap{ text-align:center; }
+
+  .cta-pill{
+    display:block; background:var(--cream); color:var(--bg-deep);
+    text-decoration:none; text-align:center; font-weight:600; font-size:14px;
+    padding:14px; border-radius:999px; margin-bottom:10px;
+  }
+  .cta-outline{
+    display:block; background:transparent; color:var(--cream);
+    text-decoration:none; text-align:center; font-weight:500; font-size:13px;
+    padding:12px; border-radius:999px; margin-bottom:10px;
+    border:1px solid var(--line);
+  }
   .link-card{
     display:flex; align-items:center; gap:14px;
     background:var(--bg-panel); border:1px solid var(--line); border-radius:14px;
@@ -130,7 +149,9 @@ function renderBlock(b) {
         ? `<div class="avatar"><img src="${escapeAttr(b.imgSrc)}" alt=""></div>`
         : `<div class="avatar">${escapeHtml(b.text || '')}</div>`;
     case 'heading':
-      return `<h1>${escapeHtml(b.text || '')}</h1>`;
+      return b.badge
+        ? `<div class="badge-wrap"><span class="badge-title">${escapeHtml(b.text || '')}</span></div>`
+        : `<h1>${escapeHtml(b.text || '')}</h1>`;
     case 'paragraph':
       return `<p class="paragraph">${escapeHtml(b.text || '')}</p>`;
     case 'divider':
@@ -138,6 +159,12 @@ function renderBlock(b) {
     case 'link':
       if (b.style === 'main') {
         return `<a class="cta-main" href="${escapeAttr(b.url)}" target="_blank">${escapeHtml(b.title || '')}</a>`;
+      }
+      if (b.style === 'pill') {
+        return `<a class="cta-pill" href="${escapeAttr(b.url)}" target="_blank">${escapeHtml(b.title || '')}</a>`;
+      }
+      if (b.style === 'outline') {
+        return `<a class="cta-outline" href="${escapeAttr(b.url)}" target="_blank">${escapeHtml(b.title || '')}</a>`;
       }
       return `<a class="link-card" href="${escapeAttr(b.url)}" target="_blank">
                 <div class="dot"></div>
