@@ -91,6 +91,7 @@
       <option value="link-card">Link (kartu)</option>
       <option value="image">Gambar</option>
       <option value="gallery-expand">Kartu expand (galeri foto)</option>
+      <option value="gallery-link">Link ke galeri (halaman baru)</option>
     </select>
     <button onclick="addBlock()">+ Tambah block</button>
     <button class="btn-save" onclick="saveBlocks()">Simpan perubahan</button>
@@ -135,6 +136,7 @@ function blankBlock(type) {
     case 'link-card': return { id, type: 'link', style: 'card', title: 'Judul link', subtitle: 'Keterangan singkat', url: 'https://' };
     case 'image': return { id, type: 'image', src: 'https://via.placeholder.com/300x300', href: '' };
     case 'gallery-expand': return { id, type: 'gallery-expand', title: 'Judul Kartu', images: [] };
+    case 'gallery-link': return { id, type: 'gallery-link', title: 'Judul Kartu', subtitle: 'Klik untuk lihat foto', images: [] };
   }
 }
 
@@ -220,22 +222,27 @@ function blockCard(b, i) {
         <div class="field"><label>URL saat diklik (opsional)</label>
           <input value="${esc(b.href)}" oninput="updateField('${b.id}','href',this.value)"></div>
       </div>`;
-  } else if (b.type === 'gallery-expand') {
+  } else if (b.type === 'gallery-expand' || b.type === 'gallery-link') {
     const imgs = (b.images || []).map((url, idx) => `
       <div class="field" style="display:flex; gap:6px; align-items:center;">
         <input style="flex:1" value="${esc(url)}" oninput="updateGalleryImage('${b.id}',${idx},this.value)">
         <button class="icon-btn danger" onclick="removeGalleryImage('${b.id}',${idx})" title="Hapus gambar">✕</button>
       </div>`).join('');
+    const subtitleField = b.type === 'gallery-link'
+      ? `<div class="field"><label>Keterangan singkat</label>
+          <input value="${esc(b.subtitle)}" oninput="updateField('${b.id}','subtitle',this.value)"></div>`
+      : '';
     fields = `
-      <div class="field"><label>Judul kartu (yang tampil sebelum diklik)</label>
+      <div class="field"><label>${b.type === 'gallery-link' ? 'Judul' : 'Judul kartu (yang tampil sebelum diklik)'}</label>
         <input value="${esc(b.title)}" oninput="updateField('${b.id}','title',this.value)"></div>
-      <label style="display:block; font-size:11.5px; color:var(--sage); margin-bottom:6px;">Foto di dalam kartu</label>
+      ${subtitleField}
+      <label style="display:block; font-size:11.5px; color:var(--sage); margin-bottom:6px;">Foto (urut dari atas)</label>
       ${imgs}
       <button class="icon-btn" style="border:1px dashed var(--line); border-radius:8px; padding:8px; width:100%; margin-top:4px;"
         onclick="addGalleryImage('${b.id}')">+ Tambah URL gambar</button>`;
   }
 
-  const typeLabels = { 'gallery-expand': 'Kartu expand (galeri foto)' };
+  const typeLabels = { 'gallery-expand': 'Kartu expand (galeri foto)', 'gallery-link': 'Link ke galeri' };
   const typeLabel = b.type === 'link'
     ? (b.style === 'main' ? 'Link (tombol utama)' : 'Link (kartu)')
     : (typeLabels[b.type] || b.type);
