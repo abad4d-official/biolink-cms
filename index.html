@@ -65,6 +65,31 @@
   .link-card .text span{ display:block; font-size:12.5px; color:var(--sage); margin-top:2px; }
   .image-block{ margin-bottom:12px; border-radius:14px; overflow:hidden; border:1px solid var(--line); display:block; }
   .image-block img{ width:100%; display:block; }
+
+  .expand-block{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:14px;
+    margin-bottom:12px; overflow:hidden;
+  }
+  .expand-head{
+    display:flex; align-items:center; gap:10px; padding:14px 16px;
+    cursor:pointer; user-select:none; background:none; border:none; width:100%;
+    color:var(--cream); font-family:inherit; text-align:left;
+  }
+  .expand-head strong{ flex:1; font-size:14.5px; font-weight:500; }
+  .expand-head .chev{ color:var(--sage); transition:transform .2s ease; font-size:12px; }
+  .expand-block.open .expand-head .chev{ transform:rotate(180deg); }
+  .expand-body{
+    max-height:0; overflow:hidden; transition:max-height .3s ease;
+  }
+  .expand-block.open .expand-body{ max-height:2000px; }
+  .expand-gallery{
+    display:grid; grid-template-columns:1fr 1fr; gap:8px;
+    padding:0 14px 14px;
+  }
+  .expand-gallery a{
+    display:block; aspect-ratio:1/1; border-radius:10px; overflow:hidden; border:1px solid var(--line);
+  }
+  .expand-gallery img{ width:100%; height:100%; object-fit:cover; display:block; }
   .loading, .empty{ text-align:center; color:var(--sage); font-size:14px; margin-top:40px; }
   footer{ text-align:center; margin-top:40px; font-size:12px; color:rgba(245,241,232,0.35); }
 </style>
@@ -121,6 +146,20 @@ function renderBlock(b) {
       return `<a class="image-block" href="${escapeAttr(b.href || b.src)}" target="_blank">
                 <img src="${escapeAttr(b.src)}" alt="">
               </a>`;
+    case 'gallery-expand': {
+      const images = (b.images || []).map(src =>
+        `<a href="${escapeAttr(src)}" target="_blank"><img src="${escapeAttr(src)}" alt=""></a>`
+      ).join('');
+      return `<div class="expand-block">
+                <button class="expand-head" onclick="this.parentElement.classList.toggle('open')">
+                  <strong>${escapeHtml(b.title || '')}</strong>
+                  <span class="chev">▾</span>
+                </button>
+                <div class="expand-body">
+                  <div class="expand-gallery">${images}</div>
+                </div>
+              </div>`;
+    }
     default:
       return '';
   }
