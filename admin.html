@@ -3,217 +3,300 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nama Bisnis Kamu — Link Resmi</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<title>Admin — Biolink</title>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg-deep:#0F2A2E;
-    --bg-panel:#153A3F;
-    --cream:#F5F1E8;
-    --amber:#E8A33D;
-    --sage:#7FA69B;
-    --line:rgba(245,241,232,0.12);
+    --bg-deep:#0F2A2E; --bg-panel:#153A3F; --cream:#F5F1E8;
+    --amber:#E8A33D; --sage:#7FA69B; --line:rgba(245,241,232,0.14);
+    --danger:#D9614F;
   }
-  *{box-sizing:border-box; margin:0; padding:0;}
+  *{box-sizing:border-box;}
   body{
-    background:
-      radial-gradient(circle at 15% 0%, rgba(232,163,61,0.10), transparent 45%),
-      radial-gradient(circle at 90% 20%, rgba(127,166,155,0.10), transparent 40%),
-      var(--bg-deep);
-    color:var(--cream);
-    font-family:'Work Sans', sans-serif;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    padding:56px 20px 80px;
+    margin:0; background:var(--bg-deep); color:var(--cream);
+    font-family:'Work Sans', sans-serif; padding:24px 16px 80px;
   }
-  .page{ width:100%; max-width:440px; }
-  .avatar{
-    width:84px; height:84px; border-radius:50%;
-    background:linear-gradient(135deg, var(--amber), #c97f1f);
-    display:flex; align-items:center; justify-content:center;
-    margin:0 auto 20px;
-    font-family:'Fraunces', serif; font-size:34px; font-weight:700;
-    color:var(--bg-deep);
-    box-shadow:0 8px 24px rgba(232,163,61,0.25);
-    overflow:hidden;
-  }
-  .avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
-  h1{
-    font-family:'Fraunces', serif; font-weight:600; font-size:26px;
-    text-align:center; letter-spacing:-0.01em;
-  }
-  .paragraph{ text-align:center; color:var(--sage); font-size:14px; margin-top:6px; line-height:1.5; }
-  .divider{ display:flex; justify-content:center; gap:6px; margin:24px 0; }
-  .divider span{ width:4px; height:4px; border-radius:50%; background:var(--sage); opacity:0.5; }
-  .cta-main{
-    display:block; background:var(--amber); color:var(--bg-deep);
-    text-decoration:none; text-align:center; font-weight:600; font-size:15px;
-    padding:16px; border-radius:14px; margin-bottom:12px;
-    transition:transform .15s ease, box-shadow .15s ease;
-    box-shadow:0 6px 18px rgba(232,163,61,0.18);
-  }
-  .cta-main:hover{ transform:translateY(-2px); }
+  .wrap{ max-width:640px; margin:0 auto; }
+  h1{ font-size:20px; margin-bottom:4px; }
+  .sub{ color:var(--sage); font-size:13px; margin-bottom:24px; }
 
-  .badge-title{
-    display:inline-block; background:var(--amber); color:var(--bg-deep);
-    font-family:'Fraunces', serif; font-weight:700; font-size:18px;
-    padding:6px 18px; border-radius:999px; margin:0 auto 20px; text-align:center;
+  /* --- Login gate --- */
+  #login{ max-width:320px; margin:80px auto; text-align:center; }
+  #login input{
+    width:100%; padding:12px; border-radius:10px; border:1px solid var(--line);
+    background:var(--bg-panel); color:var(--cream); font-size:14px; margin-bottom:10px;
   }
-  .badge-wrap{ text-align:center; }
+  #login button{
+    width:100%; padding:12px; border-radius:10px; border:none;
+    background:var(--amber); color:var(--bg-deep); font-weight:600; cursor:pointer;
+  }
+  #loginError{ color:var(--danger); font-size:13px; margin-top:8px; min-height:18px; }
 
-  .cta-pill{
-    display:block; background:var(--cream); color:var(--bg-deep);
-    text-decoration:none; text-align:center; font-weight:600; font-size:14px;
-    padding:14px; border-radius:999px; margin-bottom:10px;
+  /* --- Admin panel --- */
+  #panel{ display:none; }
+  .toolbar{ display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+  .toolbar select, .toolbar button{
+    padding:10px 14px; border-radius:10px; border:1px solid var(--line);
+    background:var(--bg-panel); color:var(--cream); font-size:13px; cursor:pointer;
   }
-  .cta-outline{
-    display:block; background:transparent; color:var(--cream);
-    text-decoration:none; text-align:center; font-weight:500; font-size:13px;
-    padding:12px; border-radius:999px; margin-bottom:10px;
-    border:1px solid var(--line);
-  }
-  .link-card{
-    display:flex; align-items:center; gap:14px;
-    background:var(--bg-panel); border:1px solid var(--line); border-radius:14px;
-    padding:14px 16px; margin-bottom:12px; text-decoration:none; color:var(--cream);
-    transition:border-color .15s ease, transform .15s ease;
-  }
-  .link-card:hover{ border-color:var(--amber); transform:translateY(-2px); }
-  .link-card .dot{ width:10px; height:10px; border-radius:50%; background:var(--sage); flex-shrink:0; }
-  .link-card .text strong{ display:block; font-size:14.5px; font-weight:500; }
-  .link-card .text span{ display:block; font-size:12.5px; color:var(--sage); margin-top:2px; }
-  .image-block{ margin-bottom:12px; border-radius:14px; overflow:hidden; border:1px solid var(--line); display:block; }
-  .image-block img{ width:100%; display:block; }
+  .btn-save{ background:var(--amber); color:var(--bg-deep); border:none; font-weight:600; margin-left:auto; }
+  .status{ font-size:12px; color:var(--sage); margin-left:8px; align-self:center; }
 
-  .expand-block{
-    background:var(--bg-panel); border:1px solid var(--line); border-radius:14px;
-    margin-bottom:12px; overflow:hidden;
+  .block{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:12px;
+    padding:14px; margin-bottom:10px;
   }
-  .expand-head{
-    display:flex; align-items:center; gap:10px; padding:14px 16px;
-    cursor:pointer; user-select:none; background:none; border:none; width:100%;
-    color:var(--cream); font-family:inherit; text-align:left;
+  .block-head{ display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+  .block-type{ font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--sage); font-weight:600; }
+  .block-head .spacer{ flex:1; }
+  .icon-btn{
+    background:none; border:none; color:var(--cream); opacity:0.7; cursor:pointer;
+    font-size:14px; padding:4px 6px;
   }
-  .expand-head strong{ flex:1; font-size:14.5px; font-weight:500; }
-  .expand-head .chev{ color:var(--sage); transition:transform .2s ease; font-size:12px; }
-  .expand-block.open .expand-head .chev{ transform:rotate(180deg); }
-  .expand-body{
-    max-height:0; overflow:hidden; transition:max-height .3s ease;
+  .icon-btn:hover{ opacity:1; }
+  .icon-btn.danger{ color:var(--danger); }
+
+  .field{ margin-bottom:8px; }
+  .field label{ display:block; font-size:11.5px; color:var(--sage); margin-bottom:3px; }
+  .field input, .field select{
+    width:100%; padding:9px 10px; border-radius:8px; border:1px solid var(--line);
+    background:var(--bg-deep); color:var(--cream); font-size:13.5px;
   }
-  .expand-block.open .expand-body{ max-height:2000px; }
-  .expand-gallery{
-    display:grid; grid-template-columns:1fr 1fr; gap:8px;
-    padding:0 14px 14px;
-  }
-  .expand-gallery a{
-    display:block; aspect-ratio:1/1; border-radius:10px; overflow:hidden; border:1px solid var(--line);
-  }
-  .expand-gallery img{ width:100%; height:100%; object-fit:cover; display:block; }
-  .loading, .empty{ text-align:center; color:var(--sage); font-size:14px; margin-top:40px; }
-  footer{ text-align:center; margin-top:40px; font-size:12px; color:rgba(245,241,232,0.35); }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+
+  .empty-msg{ text-align:center; color:var(--sage); font-size:13px; padding:30px 0; }
 </style>
 </head>
 <body>
-<div class="page" id="page">
-  <p class="loading">Memuat...</p>
+
+<div id="login">
+  <h1>Masuk Admin</h1>
+  <p class="sub">Masukkan password untuk mengelola halaman</p>
+  <input type="password" id="pwInput" placeholder="Password admin">
+  <button onclick="tryLogin()">Masuk</button>
+  <div id="loginError"></div>
+</div>
+
+<div class="wrap" id="panel">
+  <h1>Kelola Halaman</h1>
+  <p class="sub">Tambah, edit, urutkan, atau hapus block. Jangan lupa klik Simpan.</p>
+
+  <div class="toolbar">
+    <select id="typeSelect">
+      <option value="avatar">Avatar</option>
+      <option value="heading">Judul</option>
+      <option value="heading-badge">Judul (badge warna)</option>
+      <option value="paragraph">Paragraf</option>
+      <option value="divider">Pemisah</option>
+      <option value="link">Link (tombol utama)</option>
+      <option value="link-card">Link (kartu)</option>
+      <option value="link-pill">Link (pill putih)</option>
+      <option value="link-outline">Link (outline)</option>
+      <option value="image">Gambar</option>
+      <option value="gallery-expand">Kartu expand (galeri foto)</option>
+      <option value="gallery-link">Link ke galeri (halaman baru)</option>
+    </select>
+    <button onclick="addBlock()">+ Tambah block</button>
+    <button class="btn-save" onclick="saveBlocks()">Simpan perubahan</button>
+    <span class="status" id="statusMsg"></span>
+  </div>
+
+  <div id="blockList"></div>
 </div>
 
 <script>
-async function render() {
-  const container = document.getElementById('page');
-  let blocks = [];
+const ADMIN_TOKEN_KEY = 'biolink_admin_token';
+let blocks = [];
 
-  try {
-    const res = await fetch('/api/blocks');
-    blocks = await res.json();
-  } catch (e) {
-    container.innerHTML = '<p class="empty">Gagal memuat data.</p>';
-    return;
+function tryLogin() {
+  const pw = document.getElementById('pwInput').value;
+  if (!pw) return;
+  sessionStorage.setItem(ADMIN_TOKEN_KEY, pw);
+  verifyAndLoad();
+}
+
+async function verifyAndLoad() {
+  const token = sessionStorage.getItem(ADMIN_TOKEN_KEY);
+  if (!token) return;
+
+  // Coba load data. Kalau token salah, POST test-nya baru ketahuan saat save.
+  const res = await fetch('/api/blocks');
+  blocks = await res.json();
+
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('panel').style.display = 'block';
+  renderList();
+}
+
+function blankBlock(type) {
+  const id = 'b' + Date.now() + Math.floor(Math.random() * 1000);
+  switch (type) {
+    case 'avatar': return { id, type: 'avatar', text: 'NB' };
+    case 'heading': return { id, type: 'heading', text: 'Judul Baru' };
+    case 'heading-badge': return { id, type: 'heading', badge: true, text: 'Judul Baru' };
+    case 'paragraph': return { id, type: 'paragraph', text: 'Teks paragraf...' };
+    case 'divider': return { id, type: 'divider' };
+    case 'link': return { id, type: 'link', style: 'main', title: 'Chat via WhatsApp', url: 'https://wa.me/62' };
+    case 'link-card': return { id, type: 'link', style: 'card', title: 'Judul link', subtitle: 'Keterangan singkat', url: 'https://' };
+    case 'link-pill': return { id, type: 'link', style: 'pill', title: 'Judul tombol', url: 'https://' };
+    case 'link-outline': return { id, type: 'link', style: 'outline', title: 'Judul tombol', url: 'https://' };
+    case 'image': return { id, type: 'image', src: 'https://via.placeholder.com/300x300', href: '' };
+    case 'gallery-expand': return { id, type: 'gallery-expand', title: 'Judul Kartu', images: [] };
+    case 'gallery-link': return { id, type: 'gallery-link', title: 'Judul Kartu', subtitle: 'Klik untuk lihat foto', images: [] };
   }
+}
 
+function addBlock() {
+  const type = document.getElementById('typeSelect').value;
+  blocks.push(blankBlock(type));
+  renderList();
+}
+
+function removeBlock(id) {
+  blocks = blocks.filter(b => b.id !== id);
+  renderList();
+}
+
+function moveBlock(id, dir) {
+  const i = blocks.findIndex(b => b.id === id);
+  const j = i + dir;
+  if (j < 0 || j >= blocks.length) return;
+  [blocks[i], blocks[j]] = [blocks[j], blocks[i]];
+  renderList();
+}
+
+function updateField(id, key, value) {
+  const b = blocks.find(x => x.id === id);
+  if (b) b[key] = value;
+}
+
+function addGalleryImage(id) {
+  const b = blocks.find(x => x.id === id);
+  if (!b) return;
+  if (!b.images) b.images = [];
+  b.images.push('https://via.placeholder.com/300x300');
+  renderList();
+}
+function updateGalleryImage(id, idx, value) {
+  const b = blocks.find(x => x.id === id);
+  if (b && b.images) b.images[idx] = value;
+}
+function removeGalleryImage(id, idx) {
+  const b = blocks.find(x => x.id === id);
+  if (b && b.images) { b.images.splice(idx, 1); renderList(); }
+}
+
+function renderList() {
+  const list = document.getElementById('blockList');
   if (!blocks.length) {
-    container.innerHTML = '<p class="empty">Belum ada konten. Buka /admin.html untuk mulai menambahkan.</p>';
+    list.innerHTML = '<p class="empty-msg">Belum ada block. Tambahkan dari toolbar di atas.</p>';
+    return;
+  }
+  list.innerHTML = blocks.map((b, i) => blockCard(b, i)).join('');
+}
+
+function blockCard(b, i) {
+  let fields = '';
+  if (b.type === 'avatar') {
+    fields = `
+      <div class="field"><label>URL gambar (kosongkan kalau mau pakai inisial teks)</label>
+        <input value="${esc(b.imgSrc)}" oninput="updateField('${b.id}','imgSrc',this.value)"></div>
+      <div class="field"><label>Inisial teks (fallback kalau gambar kosong)</label>
+        <input value="${esc(b.text)}" oninput="updateField('${b.id}','text',this.value)"></div>`;
+  } else if (b.type === 'heading' || b.type === 'paragraph') {
+    fields = `<div class="field"><label>Teks</label>
+      <input value="${esc(b.text)}" oninput="updateField('${b.id}','text',this.value)"></div>`;
+  } else if (b.type === 'link' && (b.style === 'main' || b.style === 'pill' || b.style === 'outline')) {
+    fields = `
+      <div class="field"><label>Judul tombol</label>
+        <input value="${esc(b.title)}" oninput="updateField('${b.id}','title',this.value)"></div>
+      <div class="field"><label>URL tujuan</label>
+        <input value="${esc(b.url)}" oninput="updateField('${b.id}','url',this.value)"></div>`;
+  } else if (b.type === 'link' && b.style === 'card') {
+    fields = `
+      <div class="field"><label>Judul</label>
+        <input value="${esc(b.title)}" oninput="updateField('${b.id}','title',this.value)"></div>
+      <div class="field"><label>Keterangan</label>
+        <input value="${esc(b.subtitle)}" oninput="updateField('${b.id}','subtitle',this.value)"></div>
+      <div class="field"><label>URL tujuan</label>
+        <input value="${esc(b.url)}" oninput="updateField('${b.id}','url',this.value)"></div>`;
+  } else if (b.type === 'image') {
+    fields = `
+      <div class="row2">
+        <div class="field"><label>URL gambar</label>
+          <input value="${esc(b.src)}" oninput="updateField('${b.id}','src',this.value)"></div>
+        <div class="field"><label>URL saat diklik (opsional)</label>
+          <input value="${esc(b.href)}" oninput="updateField('${b.id}','href',this.value)"></div>
+      </div>`;
+  } else if (b.type === 'gallery-expand' || b.type === 'gallery-link') {
+    const imgs = (b.images || []).map((url, idx) => `
+      <div class="field" style="display:flex; gap:6px; align-items:center;">
+        <input style="flex:1" value="${esc(url)}" oninput="updateGalleryImage('${b.id}',${idx},this.value)">
+        <button class="icon-btn danger" onclick="removeGalleryImage('${b.id}',${idx})" title="Hapus gambar">✕</button>
+      </div>`).join('');
+    const subtitleField = b.type === 'gallery-link'
+      ? `<div class="field"><label>Keterangan singkat</label>
+          <input value="${esc(b.subtitle)}" oninput="updateField('${b.id}','subtitle',this.value)"></div>`
+      : '';
+    fields = `
+      <div class="field"><label>${b.type === 'gallery-link' ? 'Judul' : 'Judul kartu (yang tampil sebelum diklik)'}</label>
+        <input value="${esc(b.title)}" oninput="updateField('${b.id}','title',this.value)"></div>
+      ${subtitleField}
+      <label style="display:block; font-size:11.5px; color:var(--sage); margin-bottom:6px;">Foto (urut dari atas)</label>
+      ${imgs}
+      <button class="icon-btn" style="border:1px dashed var(--line); border-radius:8px; padding:8px; width:100%; margin-top:4px;"
+        onclick="addGalleryImage('${b.id}')">+ Tambah URL gambar</button>`;
+  }
+
+  const typeLabels = { 'gallery-expand': 'Kartu expand (galeri foto)', 'gallery-link': 'Link ke galeri' };
+  const linkStyleLabels = { main: 'Link (tombol utama)', card: 'Link (kartu)', pill: 'Link (pill putih)', outline: 'Link (outline)' };
+  const typeLabel = b.type === 'link'
+    ? linkStyleLabels[b.style]
+    : (b.type === 'heading' && b.badge ? 'Judul (badge warna)' : (typeLabels[b.type] || b.type));
+
+  return `
+    <div class="block">
+      <div class="block-head">
+        <span class="block-type">${typeLabel}</span>
+        <div class="spacer"></div>
+        <button class="icon-btn" onclick="moveBlock('${b.id}',-1)" title="Naik">↑</button>
+        <button class="icon-btn" onclick="moveBlock('${b.id}',1)" title="Turun">↓</button>
+        <button class="icon-btn danger" onclick="removeBlock('${b.id}')" title="Hapus">✕</button>
+      </div>
+      ${fields}
+    </div>`;
+}
+
+async function saveBlocks() {
+  const token = sessionStorage.getItem(ADMIN_TOKEN_KEY);
+  const statusEl = document.getElementById('statusMsg');
+  statusEl.textContent = 'Menyimpan...';
+
+  const res = await fetch('/api/blocks', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-admin-token': token },
+    body: JSON.stringify(blocks)
+  });
+
+  if (res.status === 401) {
+    statusEl.textContent = '';
+    sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+    document.getElementById('panel').style.display = 'none';
+    document.getElementById('login').style.display = 'block';
+    document.getElementById('loginError').textContent = 'Password salah, coba lagi.';
     return;
   }
 
-  container.innerHTML = blocks.map(renderBlock).join('') +
-    '<footer>© 2026 Nama Bisnis Kamu</footer>';
+  statusEl.textContent = 'Tersimpan ✓';
+  setTimeout(() => statusEl.textContent = '', 2000);
 }
 
-function renderBlock(b) {
-  switch (b.type) {
-    case 'avatar':
-      return b.imgSrc
-        ? `<div class="avatar"><img src="${escapeAttr(b.imgSrc)}" alt=""></div>`
-        : `<div class="avatar">${escapeHtml(b.text || '')}</div>`;
-    case 'heading':
-      return b.badge
-        ? `<div class="badge-wrap"><span class="badge-title">${escapeHtml(b.text || '')}</span></div>`
-        : `<h1>${escapeHtml(b.text || '')}</h1>`;
-    case 'paragraph':
-      return `<p class="paragraph">${escapeHtml(b.text || '')}</p>`;
-    case 'divider':
-      return `<div class="divider"><span></span><span></span><span></span></div>`;
-    case 'link':
-      if (b.style === 'main') {
-        return `<a class="cta-main" href="${escapeAttr(b.url)}" target="_blank">${escapeHtml(b.title || '')}</a>`;
-      }
-      if (b.style === 'pill') {
-        return `<a class="cta-pill" href="${escapeAttr(b.url)}" target="_blank">${escapeHtml(b.title || '')}</a>`;
-      }
-      if (b.style === 'outline') {
-        return `<a class="cta-outline" href="${escapeAttr(b.url)}" target="_blank">${escapeHtml(b.title || '')}</a>`;
-      }
-      return `<a class="link-card" href="${escapeAttr(b.url)}" target="_blank">
-                <div class="dot"></div>
-                <div class="text">
-                  <strong>${escapeHtml(b.title || '')}</strong>
-                  <span>${escapeHtml(b.subtitle || '')}</span>
-                </div>
-              </a>`;
-    case 'image':
-      return `<a class="image-block" href="${escapeAttr(b.href || b.src)}" target="_blank">
-                <img src="${escapeAttr(b.src)}" alt="">
-              </a>`;
-    case 'gallery-expand': {
-      const images = (b.images || []).map(src =>
-        `<a href="${escapeAttr(src)}" target="_blank"><img src="${escapeAttr(src)}" alt=""></a>`
-      ).join('');
-      return `<div class="expand-block">
-                <button class="expand-head" onclick="this.parentElement.classList.toggle('open')">
-                  <strong>${escapeHtml(b.title || '')}</strong>
-                  <span class="chev">▾</span>
-                </button>
-                <div class="expand-body">
-                  <div class="expand-gallery">${images}</div>
-                </div>
-              </div>`;
-    }
-    case 'gallery-link':
-      return `<a class="link-card" href="gallery.html?id=${encodeURIComponent(b.id)}">
-                <div class="dot"></div>
-                <div class="text">
-                  <strong>${escapeHtml(b.title || '')}</strong>
-                  <span>${escapeHtml(b.subtitle || '')}</span>
-                </div>
-              </a>`;
-    default:
-      return '';
-  }
+function esc(str) {
+  return String(str || '').replace(/"/g, '&quot;');
 }
 
-function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, c => ({
-    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
-  }[c]));
-}
-function escapeAttr(str) {
-  return String(str || '#').replace(/"/g, '&quot;');
-}
-
-render();
+// Auto-login kalau token masih ada di session
+if (sessionStorage.getItem(ADMIN_TOKEN_KEY)) verifyAndLoad();
 </script>
 </body>
 </html>
